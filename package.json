@@ -1,0 +1,16 @@
+{
+  "name": "upstox_assignment",
+  "version": "1.0.0",
+  "description": "API to deliver instant search on list of names",
+  "main": "app.js",
+  "scripts": {
+    "start": "node ./app.js",
+    "test": "mocha"
+  },
+  "author": "Azhar Husain",
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0"
+  }
+}

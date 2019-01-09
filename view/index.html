@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Instant Search</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            font-size: 1rem;
+            display: flex;
+            justify-content: center;
+            background: #7E57C2;
+        }
+        .container {
+            width: 60%;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            padding: 40px;
+            text-align: center;
+        }
+        main {
+            display: flex;
+            flex-direction: row;
+        }
+        input {
+            display: block;
+            margin: 0;
+            color: inherit;
+            width: 100%;
+            padding: 0.5rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: inherit;
+            line-height: 1rem;
+            border: none;
+            border-radius: 0.4rem;
+            transition: box-shadow;
+        }
+
+        input::placeholder {
+        color: #B0BEC5;
+        }
+        input:focus {
+        outline: none;
+        box-shadow: 0.2rem 0.8rem 1.6rem #5e35b1;
+        }
+
+        button {
+            margin-left: 1rem;
+            padding: 0.5rem;
+            font-size: 1.1rem;
+            outline: none;
+            background-color: white;
+            color: #5e35b1;
+            border: none;
+            border-radius: 0.2rem;
+            cursor: pointer;
+            transition: box-shadow;
+        }
+
+        button:hover {
+            box-shadow: 0.2rem 0.8rem 1.6rem #5e35b1;
+        }
+
+        section {
+            display: flex;
+            flex-direction: column;
+            margin-top: 30px;
+        }
+
+        .heading {
+            display: grid;
+            grid-template-columns:2fr 1fr;
+            font-size: 1.3rem;
+            background: white;
+            border-bottom: 1px solid #ccc;
+        }
+        .heading-item {
+            text-align: center;
+            padding: 0.5rem;
+        }
+        .heading > strong:first-child {
+            border-right: 1px solid #ccc;
+        }
+
+        .result-item {
+            display: grid;
+            grid-template-columns:2fr 1fr;
+            background: white;
+        }
+        .result-item:nth-child(odd) {
+            background: #fffeee;
+        }
+        .result-item > span {
+            padding: 0.5rem;
+        }
+        .result-item > span:first-child {
+            border-right: 1px solid #ccc;
+        }
+        .result-item > span:last-child {
+            text-align: center;
+        }
+
+        .error-message {
+            padding: 0.5rem;
+            background: white;
+            line-height: 30px;
+            color: firebrick;
+            text-align: center;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h2>Instant Search</h2>
+        </header>
+        <main>
+            <input type="text" name="" id="searchinput" placeholder="Enter search term here">
+            <button onclick="search()">Search</button>
+        </main>
+        <section>
+        </section>
+    </div>
+</body>
+
+
+<script>
+    function search() {
+        var term = document.getElementById('searchinput').value;
+
+        // Create a request variable and assign a new XMLHttpRequest object to it.
+        var request = new XMLHttpRequest();
+
+        // Open a new connection, using the GET request on the URL endpoint
+        request.open('GET', 'http://localhost:3000/search?term=' + term, true);
+
+        request.onload = function () {
+            var result = JSON.parse(this.response);
+
+            if (result.type === 'error') {
+                var section = document.getElementsByTagName('section');
+                section[0].innerHTML = `<div class="error-message">
+                    ${result.message}
+                    </div>`;
+            }
+            if (result.type === 'success') {
+                var section = document.getElementsByTagName('section');
+                section[0].innerHTML = '';
+                var headingNode = document.createElement('div');
+                headingNode.classList.add('heading');
+
+                for(i=1; i<3; i++) {
+                    var boldNode = document.createElement('strong');
+                    boldNode.classList.add('heading-item');
+                    boldNode.appendChild(i===1 ? document.createTextNode('Name'): document.createTextNode('Score'));
+                    headingNode.appendChild(boldNode);
+                }
+
+                section[0].appendChild(headingNode);
+                
+
+                result.data.forEach(element => {
+
+                    var resultItemNode = document.createElement('div');
+                    resultItemNode.classList.add('result-item');
+
+                    var nameNode = document.createElement('span');
+                    nameNode.appendChild(document.createTextNode(element.name));
+                    resultItemNode.appendChild(nameNode);
+
+                    var scoreNode = document.createElement('span');
+                    scoreNode.appendChild(document.createTextNode(parseFloat(element.score).toFixed(2)));
+                    resultItemNode.appendChild(scoreNode);
+
+                    section[0].appendChild(resultItemNode);
+                });
+            }
+        }
+        // Send request
+        request.send();
+    }
+
+
+</script>
+
+</html>
